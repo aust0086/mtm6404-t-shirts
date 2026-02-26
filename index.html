@@ -1,12 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>T-Shirts</title>
+
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Inter:wght@300;400&display=swap"
+    rel="stylesheet">
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  
-  
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel" data-type="module">
+    import React, { useState } from "https://esm.sh/react@19";
+    import ReactDOM from "https://esm.sh/react-dom@19/client";
+
+    const tshirts = [
+      { title: 'Blue T-Shirt', image: 'blue-t-shirt.jpg', price: 7.99, stock: 4 },
+      { title: 'Bright Purple T-Shirt', image: 'bright-purple-t-shirt.jpg', price: 5.99, stock: 1 },
+      { title: 'Cobalt Blue T-Shirt', image: 'cobalt-blue-t-shirt.jpg', price: 9.99, stock: 5 },
+      { title: 'Green T-Shirt', image: 'green-t-shirt.jpg', price: 6.99, stock: 0 },
+      { title: 'Grey T-Shirt', image: 'blue-t-shirt.jpg', price: 4.99, stock: 2 },
+      { title: 'Light Green T-Shirt', image: 'light-green-t-shirt.jpg', price: 7.99, stock: 4 },
+      { title: 'Purple T-Shirt', image: 'purple-t-shirt.jpg', price: 7.99, stock: 0 },
+      { title: 'Red T-Shirt', image: 'red-t-shirt.jpg', price: 6.99, stock: 3 },
+      { title: 'Teal T-Shirt', image: 'teal-t-shirt.jpg', price: 7.99, stock: 2 }
+    ];
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+
+    const App = () => {
+      const [items, setItems] = useState(
+        tshirts.map(item => ({ ...item, quantity: 1 }))
+      );
+
+      const handleQuantityChange = (index, value) => {
+        const updated = [...items];
+        updated[index].quantity = parseInt(value);
+        setItems(updated);
+      };
+
+      const handleBuy = (index) => {
+        const updated = [...items];
+        const item = updated[index];
+
+        if (item.stock >= item.quantity) {
+          item.stock -= item.quantity;
+          item.quantity = 1;
+        }
+
+        setItems(updated);
+      };
+
+      return (
+        <div className="container">
+          <h1 className="title">T-shirt Closet</h1>
+
+          <div className="store">
+            {items.map((shirt, index) => (
+              <div className="card" key={index}>
+                <h3>{shirt.title}</h3>
+                <img src={`images/${shirt.image}`} alt={shirt.title} />
+                <p className="price">${shirt.price.toFixed(2)}</p>
+
+                {shirt.stock > 0 ? (
+                  <div className="in-stock-wrapper">
+                    <p className="stock">In Stock: {shirt.stock}</p>
+
+                    <div className="controls">
+                      <select
+                        value={shirt.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(index, e.target.value)
+                        }
+                      >
+                        {[...Array(shirt.stock)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>
+                            {i + 1}
+                          </option>
+                        ))}
+                      </select>
+
+                      <button onClick={() => handleBuy(index)}>
+                        Purchase
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="out">Out of Stock</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+
+    root.render(<App />);
+  </script>
 </body>
+
 </html>
